@@ -13,6 +13,18 @@ async function bootstrap() {
     origin: ['http://localhost:3000'],
   });
   app.use(cookieParser());
-  await app.listen(3005);
+  app.use(
+    csurf({
+      cookie: {
+        httpOnly: true,
+        secure: true, // true:HTTPS化（ローカルではfalseで対応）
+        sameSite: 'none',
+      },
+      value: (req: Request) => {
+        return req.header('csrf-token');
+      },
+    }),
+  );
+  await app.listen(process.env.PORT || 3005);
 }
 bootstrap();
